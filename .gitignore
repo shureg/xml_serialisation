@@ -1,0 +1,8 @@
+*.o
+*.so
+*.a
+*.swp
+*~
+*.d
+/test_suite/test_d
+install
