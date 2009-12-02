@@ -94,10 +94,36 @@ XmlField& XmlField::operator[] (const string& ref_name)
 	    % name % ref_name);
 }
 
+XmlField::attribute_value& XmlField::operator() (const string& ref_attr)
+{
+   check_field_name(ref_attr);
+
+   return attributes[ref_attr];
+}
+
 void XmlField::open_tag(ostream& os, unsigned int indent) const
 {
    string ind_str(indent*XmlFieldShiftWidth,' ');
    os << ind_str << '<' << name << '>' << endl;
+}
+
+const string XmlField::attribute_string() const
+{
+   using namespace boost::lambda;
+
+   typedef pair<string,string> nvp_t;
+
+   ostringstream oss;
+
+   size_t n = attributes.size();
+
+   std::for_each( attributes.begin(), attributes.end(),
+	    oss  
+	     << ret<string>(bind(&nvp_t::first,_1)) << constant("=\"") 
+	     << ret<string>(bind(&nvp_t::second,_1)) << constant("\" ")
+	 );
+
+   return oss.str();
 }
 
 void XmlField::close_tag(ostream& os, unsigned int indent) const
@@ -117,7 +143,13 @@ void XmlField::print(ostream& os, unsigned int indent) const
    string ind_str_1((indent+1)*XmlFieldShiftWidth,' ');
    
    if(XmlField::pretty_print) os << ind_str_0;
-   os << '<' << name << '>';
+   
+   os << '<' << name;
+
+   if( !attributes.empty() )
+      os << " " << attribute_string();
+   
+   os << '>';
 
    if(value_set)
       os << value;
@@ -149,4 +181,9 @@ XmlField::operator const string () const
 unsigned long XmlField::get_children_number() const
 {
    return children.size();
+}
+
+XmlField::attribute_value::operator const string() const
+{
+   return value;
 }

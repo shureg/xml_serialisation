@@ -18,6 +18,7 @@
 #define  XMLSERIALISABLEOBJECT_CLASS_INC
 
 #include "xml_serialisation/XmlField.class.h"
+#include <iostream>
 
 namespace XML_SERIALISATION
 {
@@ -27,6 +28,13 @@ namespace XML_SERIALISATION
 
       virtual XmlField xml_description() const = 0;
    };
+}
+
+inline std::ostream& operator<<(std::ostream& os, const XML_SERIALISATION::XmlSerialisableObject& x)
+{
+   os << x.xml_description();
+
+   return os;
 }
 
 #endif   // ----- #ifndef XMLSERIALISABLEOBJECT_CLASS_INC  -----

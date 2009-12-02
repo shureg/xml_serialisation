@@ -4,9 +4,9 @@ space +=
 $(space) :=
 $(space) +=
 
-LIB_PATH = /home/shureg/Projects/xml_serialisation/install/lib
+LIB_PATH = 
 LIB_NAME = xml_serialisation
-INCLUDE_PATH = $(BOOST_INCLUDE_PATH) /home/shureg/Projects/xml_serialisation/install/include /home/shureg/Projects/callback_log/install/include
+INCLUDE_PATH = $(BOOST_INCLUDE_PATH) 
 
 INCLUDE_FLAGS = $(foreach i,$(INCLUDE_PATH),-I$i)
 

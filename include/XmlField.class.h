@@ -34,6 +34,19 @@ namespace XML_SERIALISATION
    {
    public:
 
+      class attribute_value
+      {
+      public:
+
+	 template<typename T> attribute_value& operator = (T);
+
+	 operator const std::string () const;
+
+      protected:
+
+	 std::string value;
+      };
+
       XmlField(const std::string&);
 
       template<typename T> XmlField(const std::string&, T);
@@ -44,7 +57,13 @@ namespace XML_SERIALISATION
 
       template<typename T> void add_field(const std::string&, T);
 
+      template<typename T> void add_attribute(const std::string&, T);
+
+      //! Child element accessor
       XmlField& operator[] (const std::string&);
+
+      //! Attribute accessor/creator
+      XmlField::attribute_value& operator() (const std::string&);
 
       const std::string& get_name() const;
 
@@ -66,6 +85,8 @@ namespace XML_SERIALISATION
 
       std::string value;
 
+      std::map<std::string,XmlField::attribute_value> attributes;
+
       std::list<XmlField> children;
 
       bool value_set;
@@ -73,6 +94,8 @@ namespace XML_SERIALISATION
       const bool is_valid_field_name(const std::string&) const;
 
       void check_field_name(const std::string&) const;
+
+      const std::string attribute_string() const;
 
    private:
 
@@ -93,7 +116,7 @@ namespace XML_SERIALISATION
       catch(const boost::bad_lexical_cast&)
       {
 	 LOG(EXCEPTION,boost::format(
-		  "A boost::lexical cast exception has been thrown "\
+		  "A boost::bad_lexical_cast exception has been thrown "\
 		  "whilst trying to cast the value of "\
 		  "the \"%s\" field to an std::string") % name);
       }
@@ -106,6 +129,42 @@ namespace XML_SERIALISATION
       }
 
       value_set = true;
+   }
+
+   template<typename T>
+      XmlField::attribute_value& XmlField::attribute_value::operator = 
+      (T _value)
+   {
+
+      try
+      {
+	 value = boost::lexical_cast<std::string>(_value);
+      }
+      catch(const boost::bad_lexical_cast&)
+      {
+	 LOG(EXCEPTION,boost::format(
+		  "A boost::bad_lexical_cast exception has been thrown "\
+		  "whilst trying to cast the value of "\
+		  "an attribute to an std::string"));
+      }
+      catch(...)
+      {
+	 LOG(EXCEPTION,boost::format(
+		  "An unspecified exception has been thrown "\
+		  "whilst trying to cast the value of "\
+		  "an attribute to an std::string"));
+      }
+
+      return *this;
+   }
+
+   template<typename T> 
+      void XmlField::add_attribute(const std::string& _name, T _value)
+   {
+      check_field_name(_name);
+
+      attributes[_name] = _value;
+
    }
 
    template<typename T> 

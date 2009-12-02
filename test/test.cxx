@@ -24,6 +24,8 @@ int main(int argc, char** argv)
 {
    XmlField tmp("Test");
    tmp.add_field("value",0);
+   tmp("id") = 1;
+   tmp("index") = "blah";
 
    cout << tmp;
 
