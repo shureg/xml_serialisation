@@ -159,7 +159,7 @@ namespace XML_SERIALISATION
    }
 
    template<typename T> 
-      void XmlField::add_attribute(const std::string& _name, T _value)
+      inline void XmlField::add_attribute(const std::string& _name, T _value)
    {
       check_field_name(_name);
 
