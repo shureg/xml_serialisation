@@ -28,6 +28,8 @@ namespace XML_SERIALISATION
 
       XmlWrap(const std::string&, const XmlSerialisableObject&);
 
+      XmlWrap(const XmlSerialisableObject&);
+
       XmlField xml_description() const;
 
    protected:
@@ -36,9 +38,8 @@ namespace XML_SERIALISATION
 
       const std::string wrap_label;
 
-   private:
+      const bool label_set;
 
-      XmlWrap();
    };
 }
 
