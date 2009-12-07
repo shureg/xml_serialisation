@@ -17,7 +17,7 @@
 #ifndef  XMLSINGLEVALUE_CLASS_INC
 #define  XMLSINGLEVALUE_CLASS_INC
 
-#include "XmlSerialisableObject.class.h"
+#include "xml_serialisation/XmlSerialisableObject.class.h"
 
 namespace XML_SERIALISATION
 {
