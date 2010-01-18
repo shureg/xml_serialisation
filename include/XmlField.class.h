@@ -23,6 +23,9 @@
 #include "boost/lexical_cast.hpp"
 #include "boost/signals.hpp"
 #include "callback_log/LOG.h"
+#include <algorithm>
+#include <sstream>
+#include "boost/lambda/lambda.hpp"
 
 using namespace CALLBACK_LOG;
 
@@ -58,6 +61,11 @@ namespace XML_SERIALISATION
       template<typename T> void add_field(const std::string&, T);
 
       template<typename T> void add_attribute(const std::string&, T);
+
+      template<class InputIterator> void add_field(
+	    const std::string&, 
+	    InputIterator first, InputIterator last,
+	    const std::string& separator);
 
       //! Child element accessor
       XmlField& operator[] (const std::string&);
@@ -176,6 +184,29 @@ namespace XML_SERIALISATION
 
       add_field(tmp);
    }
+
+   template<class InputIterator>
+      inline void XmlField::add_field(
+	    const std::string& _name,
+	    InputIterator first, InputIterator last,
+	    const std::string& separator)
+      {
+	 check_field_name(_name);
+
+	 std::ostringstream oss;
+
+	 using boost::lambda::_1;
+	 using boost::lambda::constant;
+
+	 std::for_each(first,last, oss << _1 << constant(separator));
+
+	 std::string raw_list_str = oss.str();
+
+	 XmlField tmp(_name,
+	       raw_list_str.resize(raw_list_str.size()-1));
+
+	 add_field(tmp);
+      }
 }
 
 inline std::ostream& operator << (
