@@ -203,7 +203,7 @@ namespace XML_SERIALISATION
 	 std::string raw_list_str = oss.str();
 
 	 XmlField tmp(_name,
-	       raw_list_str.resize(raw_list_str.size()-1));
+	       raw_list_str);
 
 	 add_field(tmp);
       }
