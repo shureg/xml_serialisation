@@ -27,6 +27,8 @@ namespace XML_SERIALISATION
    public:
 
       virtual XmlField xml_description() const = 0;
+
+      virtual ~XmlSerialisableObject(){}
    };
 }
 
