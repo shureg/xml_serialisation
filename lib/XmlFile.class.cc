@@ -26,13 +26,13 @@ using namespace std;
 XmlFile::XmlFile()
 {}
 
-XmlFile::XmlFile(const char* filename, const char* top_name):
-   xfs(filename, ios::app), top_name(top_name)
+XmlFile::XmlFile(const string& filename, const string& top_name):
+   xfs(filename.c_str(), ios::app), top_name(top_name)
 {
    xfs << "<" << top_name << ">\n";
 }
 
-void XmlFile::assign(const char* filename, const char* top_name)
+void XmlFile::assign(const string& filename, const string& top_name)
 {
    if( xfs.is_open() )
    {
@@ -46,7 +46,7 @@ void XmlFile::assign(const char* filename, const char* top_name)
       xfs.close();
    }
 
-   xfs.open(filename,ios::app);
+   xfs.open(filename.c_str(),ios::app);
 
    xfs << "<" << top_name << ">\n";
 }

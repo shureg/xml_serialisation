@@ -74,6 +74,8 @@ void XmlField::check_field_name(const string& candidate_name) const
 XmlField& XmlField::operator[] (const string& ref_name)
 {
    using namespace boost::lambda;
+   using boost::lambda::bind;
+   using boost::lambda::_1;
 
    int count = count_if(children.begin(),children.end(),
 	 bind(&XmlField::get_name,_1) == ref_name);
@@ -110,6 +112,8 @@ void XmlField::open_tag(ostream& os, unsigned int indent) const
 const string XmlField::attribute_string() const
 {
    using namespace boost::lambda;
+   using boost::lambda::bind;
+   using boost::lambda::_1;
 
    typedef pair<string,string> nvp_t;
 
