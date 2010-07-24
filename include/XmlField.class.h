@@ -87,6 +87,16 @@ namespace XML_SERIALISATION
 
       operator const std::string () const;
 
+      //! Returns a row of attributes
+      /*! Returns a delimiter-separated row of attributes
+       *  that can be used in flat text file represenataion
+       *  (e.g. CSV)
+       */
+      const std::string 
+	 attribute_row(
+	       const std::list<std::string>& header,
+	       const std::string& delimiter = ",") const;
+
    protected:
 
       std::string name;

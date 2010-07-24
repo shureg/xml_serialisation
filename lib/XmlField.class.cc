@@ -191,3 +191,22 @@ XmlField::attribute_value::operator const string() const
 {
    return value;
 }
+
+const string XmlField::attribute_row(
+      const list<string>& header, const string& delimiter) const
+{
+   string row = "";
+   map<string,XmlField::attribute_value>::const_iterator av;
+
+   for( list<string>::const_iterator 
+	 i = header.begin(); i !=  header.end(); ++i )
+   {
+      av = attributes.find(*i);
+      if( av != attributes.end() )
+	 row += (const string) av->second;
+
+      row += delimiter;
+   }
+
+   return row;
+}
