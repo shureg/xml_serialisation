@@ -20,6 +20,7 @@
 #include "xml_serialisation/XmlField.class.h"
 
 #include <fstream>
+#include <string>
 
 namespace XML_SERIALISATION
 {
@@ -30,9 +31,9 @@ namespace XML_SERIALISATION
 
       XmlFile();
 
-      XmlFile(const char* filename, const char* top_name);
+      XmlFile(const std::string& filename, const std::string& top_name);
 
-      void assign(const char* filename, const char* top_name);
+      void assign(const std::string& filename, const std::string& top_name);
 
       void insert(const XmlField& xml);
 
@@ -42,7 +43,7 @@ namespace XML_SERIALISATION
 
       std::ofstream xfs;
 
-      const char* top_name;
+      std::string top_name;
    };
 }
 
