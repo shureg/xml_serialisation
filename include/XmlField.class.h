@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <sstream>
 #include "boost/lambda/lambda.hpp"
+#include <map>
 
 using namespace CALLBACK_LOG;
 
@@ -36,6 +37,11 @@ namespace XML_SERIALISATION
    class XmlField
    {
    public:
+
+      typedef std::multimap<std::string, XmlField>::iterator 
+	 field_iterator;
+      typedef std::multimap<std::string, XmlField>::const_iterator 
+	 const_field_iterator;
 
       class attribute_value
       {
@@ -70,6 +76,12 @@ namespace XML_SERIALISATION
       //! Child element accessor
       XmlField& operator[] (const std::string&);
 
+      //! Child element accessor with checking
+      XmlField& get_field(const std::string&);
+
+      std::pair<field_iterator, field_iterator>
+	 get_field_range(const std::string&);
+
       //! Attribute accessor/creator
       XmlField::attribute_value& operator() (const std::string&);
 
@@ -97,6 +109,9 @@ namespace XML_SERIALISATION
 	       const std::list<std::string>& header,
 	       const std::string& delimiter = ",") const;
 
+      std::vector<std::list<XmlField>::const_iterator>
+	 find_fields(const std::string&) const;
+
    protected:
 
       std::string name;
@@ -105,9 +120,11 @@ namespace XML_SERIALISATION
 
       std::map<std::string,XmlField::attribute_value> attributes;
 
-      std::list<XmlField> children;
+      std::multimap<std::string,XmlField> children;
 
       bool value_set;
+
+      std::list<const_field_iterator> fifo;
 
       const bool is_valid_field_name(const std::string&) const;
 

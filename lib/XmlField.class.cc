@@ -47,7 +47,9 @@ void XmlField::add_field(const string& _name)
 
 void XmlField::add_field(const XmlField& x)
 {
-   children.push_back(x);
+   fifo.push_back(
+	 children.insert( pair<string,XmlField>(x.get_name(),x) )
+	 );
 }
 
 const string& XmlField::get_name() const
@@ -73,12 +75,12 @@ void XmlField::check_field_name(const string& candidate_name) const
 
 XmlField& XmlField::operator[] (const string& ref_name)
 {
-   using namespace boost::lambda;
-   using boost::lambda::bind;
-   using boost::lambda::_1;
+   return children.find(ref_name)->second;
+}
 
-   int count = count_if(children.begin(),children.end(),
-	 bind(&XmlField::get_name,_1) == ref_name);
+XmlField& XmlField::get_field(const string& ref_name)
+{
+   int count = children.count(ref_name);
 
    if(count == 0)
       LOG(CALLBACK_LOG::EXCEPTION,
@@ -86,14 +88,17 @@ XmlField& XmlField::operator[] (const string& ref_name)
 	    ("The xml field %s has no sub-field with name %s\n")
 	    % name % ref_name);
    else if(count == 1)
-      return *(
-	    find_if(children.begin(),children.end(),
-	       bind(&XmlField::get_name,_1) == ref_name )
-      );
+      return children.find(ref_name)->second;
    else
       LOG(CALLBACK_LOG::EXCEPTION,boost::format
 	    ("More than one sub-field with name %s found in field %s\n")
-	    % name % ref_name);
+	    % ref_name % name);
+}
+
+pair<XmlField::field_iterator, XmlField::field_iterator>
+   XmlField::get_field_range(const std::string& ref_name)
+{
+   return children.equal_range(ref_name);
 }
 
 XmlField::attribute_value& XmlField::operator() (const string& ref_attr)
@@ -164,10 +169,10 @@ void XmlField::print(ostream& os, unsigned int indent) const
    size_t N = children.size();
    size_t ctr = 0;
 
-   for(list<XmlField>::const_iterator
-	 i = children.begin(); i!=children.end(); ++i)
+   for(list<XmlField::const_field_iterator>::const_iterator
+	 i = fifo.begin(); i!=fifo.end(); ++i)
    {
-      i->print(os,indent+1);
+      (*i)->second.print(os,indent+1);
    }
 
    if(!value_set && XmlField::pretty_print) os << ind_str_0;
