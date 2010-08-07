@@ -78,6 +78,11 @@ XmlField& XmlField::operator[] (const string& ref_name)
    return children.find(ref_name)->second;
 }
 
+const XmlField& XmlField::operator[] (const string& ref_name) const
+{
+   return children.find(ref_name)->second;
+}
+
 XmlField& XmlField::get_field(const string& ref_name)
 {
    int count = children.count(ref_name);
@@ -95,10 +100,37 @@ XmlField& XmlField::get_field(const string& ref_name)
 	    % ref_name % name);
 }
 
-pair<XmlField::field_iterator, XmlField::field_iterator>
-   XmlField::get_field_range(const std::string& ref_name)
+pair<XmlField::const_field_iterator, XmlField::const_field_iterator>
+   XmlField::get_field_range(const std::string& ref_name) const
 {
    return children.equal_range(ref_name);
+}
+
+const bool XmlField::field_exists(const string& ref_name) const
+{
+   return (children.count(ref_name) > 0);
+}
+
+ const XmlField* XmlField::validate_path(
+      list<string>::const_iterator path_begin,
+      list<string>::const_iterator path_end) const
+{
+   const XmlField* current_field = this;
+
+   list<string>::const_iterator xp = path_begin;
+
+   while( xp != path_end && current_field->field_exists(*xp) )
+      current_field = &(*current_field)[*(xp++)];
+
+   if( xp == path_end)
+      return current_field;
+   else
+      return 0;
+}
+
+const map<string,XmlField::attribute_value>& XmlField::get_attributes() const
+{
+   return attributes;
 }
 
 XmlField::attribute_value& XmlField::operator() (const string& ref_attr)
@@ -123,8 +155,6 @@ const string XmlField::attribute_string() const
    typedef pair<string,string> nvp_t;
 
    ostringstream oss;
-
-   size_t n = attributes.size();
 
    std::for_each( attributes.begin(), attributes.end(),
 	    oss  
@@ -165,9 +195,6 @@ void XmlField::print(ostream& os, unsigned int indent) const
    else
       if(XmlField::pretty_print) 
 	 os << endl;
-
-   size_t N = children.size();
-   size_t ctr = 0;
 
    for(list<XmlField::const_field_iterator>::const_iterator
 	 i = fifo.begin(); i!=fifo.end(); ++i)

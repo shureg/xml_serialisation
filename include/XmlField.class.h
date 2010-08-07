@@ -76,11 +76,20 @@ namespace XML_SERIALISATION
       //! Child element accessor
       XmlField& operator[] (const std::string&);
 
+      const XmlField& operator[] (const std::string&) const;
+
       //! Child element accessor with checking
       XmlField& get_field(const std::string&);
 
-      std::pair<field_iterator, field_iterator>
-	 get_field_range(const std::string&);
+      std::pair<const_field_iterator, const_field_iterator>
+	 get_field_range(const std::string&) const;
+
+      const bool field_exists(const std::string&) const;
+
+      const XmlField* validate_path(
+	    std::list<std::string>::const_iterator path_begin,
+	    std::list<std::string>::const_iterator path_end
+	    ) const;
 
       //! Attribute accessor/creator
       XmlField::attribute_value& operator() (const std::string&);
@@ -111,6 +120,11 @@ namespace XML_SERIALISATION
 
       std::vector<std::list<XmlField>::const_iterator>
 	 find_fields(const std::string&) const;
+
+      const std::map<std::string, XmlField::attribute_value>& 
+	 get_attributes() const;
+
+      typedef std::map<std::string, attribute_value> attribute_map;
 
    protected:
 
