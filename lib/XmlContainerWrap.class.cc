@@ -34,9 +34,11 @@ XmlField XmlContainerWrap::xml_description() const
 {
    XmlField tmp(wrap_label);
 
-   for(list<const XmlSerialisableObject*>::const_iterator
+   for(vector<const XmlSerialisableObject*>::const_iterator
 	 i = item_list.begin(); i !=  item_list.end(); ++i)
       tmp.add_field((*i)->xml_description());
+
+   tmp("count") = item_list.size();
 
    return tmp;
 }

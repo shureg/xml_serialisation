@@ -20,7 +20,7 @@
 #include "xml_serialisation/XmlField.class.h"
 #include "xml_serialisation/XmlSerialisableObject.class.h"
 #include <string>
-#include <list>
+#include <vector>
 
 namespace XML_SERIALISATION
 {
@@ -38,7 +38,7 @@ namespace XML_SERIALISATION
       
       const std::string wrap_label; 
 
-      std::list<const XmlSerialisableObject*> item_list;
+      std::vector<const XmlSerialisableObject*> item_list;
 
    private:
 
