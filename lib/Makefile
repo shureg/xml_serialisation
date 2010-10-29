@@ -67,7 +67,7 @@ install: lib
 
 %$(LIB_OBJ_SUFFIX): %$(LIB_SRC_SUFFIX)
 	$(call make_depend,$<,$@,$*$(LIB_SRC_DEP_SUFFIX),$(LIB_INCLUDE_FLAGS))
-	g++ -c -g -fPIC $(LIB_WARNING_FLAGS) $(LIB_INCLUDE_FLAGS) $(LIB_DEFINE_FLAGS) -o $@ $<
+	g++ -c -g -O2 -fPIC $(LIB_WARNING_FLAGS) $(LIB_INCLUDE_FLAGS) $(LIB_DEFINE_FLAGS) -o $@ $<
 
 #A script to generate dependency files for c/c++ sources
 #usage $(call make_depend,src_file,obj_file,dep_file,flags)

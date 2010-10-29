@@ -21,6 +21,7 @@
 
 #include <fstream>
 #include <string>
+#include "boost/shared_ptr.hpp"
 
 namespace XML_SERIALISATION
 {
@@ -41,7 +42,7 @@ namespace XML_SERIALISATION
 
    protected:
 
-      std::ofstream xfs;
+      boost::shared_ptr<std::ofstream> xfs;
 
       std::string top_name;
    };

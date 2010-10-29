@@ -124,7 +124,14 @@ namespace XML_SERIALISATION
       const std::map<std::string, XmlField::attribute_value>& 
 	 get_attributes() const;
 
+      const std::multimap<std::string, XmlField>&
+	 get_children() const;
+
       typedef std::map<std::string, attribute_value> attribute_map;
+
+      const std::string string_format(const std::string& fmt) const;
+
+      XmlField operator+= (const XmlField& rhs);
 
    protected:
 
@@ -138,7 +145,7 @@ namespace XML_SERIALISATION
 
       bool value_set;
 
-      std::list<const_field_iterator> fifo;
+      //std::list<const_field_iterator> fifo;
 
       const bool is_valid_field_name(const std::string&) const;
 

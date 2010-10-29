@@ -19,6 +19,7 @@
 #include "boost/lambda/lambda.hpp"
 #include "boost/lambda/bind.hpp"
 #include <sstream>
+#include <iterator>
 
 using namespace XML_SERIALISATION;
 
@@ -47,9 +48,7 @@ void XmlField::add_field(const string& _name)
 
 void XmlField::add_field(const XmlField& x)
 {
-   fifo.push_back(
-	 children.insert( pair<string,XmlField>(x.get_name(),x) )
-	 );
+   children.insert( pair<string,XmlField>(x.get_name(),x) );
 }
 
 const string& XmlField::get_name() const
@@ -140,6 +139,96 @@ XmlField::attribute_value& XmlField::operator() (const string& ref_attr)
    return attributes[ref_attr];
 }
 
+const string XmlField::string_format(const string& fmt) const
+{
+   string kv_sep, map_open, map_close, attr_sep, field_sep, 
+	  k_quote, v_quote;
+
+   ostringstream oss;
+
+   if(fmt == string("XML_line"))
+   {
+      bool prev_pp = XmlField::pretty_print;
+      XmlField::pretty_print = false;
+      oss << *this;
+      XmlField::pretty_print = prev_pp;
+   }
+   else
+   {
+      if( fmt == string("Python"))
+      {
+	 kv_sep = ": ";
+	 map_open = "{ ";
+	 map_close = " }";
+	 attr_sep = ", ";
+	 field_sep = ", ";
+	 k_quote = "'";
+	 v_quote = "'";
+      }
+      else
+      {
+	 LOG(EXCEPTION, boost::format(
+		  "XmlField::string_format - unknown format "\
+		  "specifier %s\n") % fmt
+	    );
+      }
+
+      oss << k_quote << name << k_quote << kv_sep << map_open;
+
+      bool list_started = false;
+
+      if(value_set)
+      {
+	 oss << v_quote << value << v_quote;
+	 list_started = true;
+      }
+
+      if (!attributes.empty())
+      {
+	 if(list_started)
+	    oss << attr_sep;
+
+	 map<string,attribute_value>::const_iterator attr0 =
+	    attributes.begin();
+
+	 oss << k_quote << attr0->first << k_quote << kv_sep <<
+	    v_quote << (string) attr0->second << v_quote;
+
+	 ++attr0;
+
+	 for(map<string,attribute_value>::const_iterator
+	       i = attr0; i != attributes.end(); ++i)
+	 {
+	    oss << attr_sep << k_quote << i->first << k_quote << kv_sep <<
+	       v_quote << (string) i->second << v_quote;
+	 }
+
+	 list_started = true;
+      }
+
+      if(!children.empty())
+      {
+	 if(list_started)
+	    oss << field_sep;
+
+	 multimap<string, XmlField>::const_iterator fld0 =
+	    children.begin();
+
+	 oss << fld0->second.string_format(fmt);
+
+	 ++fld0;
+
+	 for(multimap<string,XmlField>::const_iterator
+	       j = fld0; j !=  children.end(); ++j)
+	    oss << field_sep << j->second.string_format(fmt);
+      }
+
+      oss << map_close;
+   }
+   
+   return oss.str();
+}
+
 void XmlField::open_tag(ostream& os, unsigned int indent) const
 {
    string ind_str(indent*XmlFieldShiftWidth,' ');
@@ -196,10 +285,10 @@ void XmlField::print(ostream& os, unsigned int indent) const
       if(XmlField::pretty_print) 
 	 os << endl;
 
-   for(list<XmlField::const_field_iterator>::const_iterator
-	 i = fifo.begin(); i!=fifo.end(); ++i)
+   for(multimap<string, XmlField>::const_iterator
+	 i = children.begin(); i!=children.end(); ++i)
    {
-      (*i)->second.print(os,indent+1);
+      i->second.print(os,indent+1);
    }
 
    if(!value_set && XmlField::pretty_print) os << ind_str_0;
@@ -222,6 +311,28 @@ unsigned long XmlField::get_children_number() const
 XmlField::attribute_value::operator const string() const
 {
    return value;
+}
+
+const multimap<string, XmlField>& XmlField::get_children() const
+{
+   return children;
+}
+
+XmlField XmlField::operator+= (const XmlField& rhs)
+{
+   XmlField pre_inc = *this;
+
+   map<string, attribute_value> rhs_attributes =
+      rhs.get_attributes();
+
+   multimap<string, XmlField> rhs_children =
+      rhs.get_children();
+
+   attributes.insert(rhs_attributes.begin(),rhs_attributes.end());
+
+   children.insert(rhs_children.begin(),rhs_children.end());
+
+   return pre_inc;
 }
 
 const string XmlField::attribute_row(
