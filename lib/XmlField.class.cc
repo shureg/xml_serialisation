@@ -153,6 +153,13 @@ const string XmlField::string_format(const string& fmt) const
       oss << *this;
       XmlField::pretty_print = prev_pp;
    }
+   else if(fmt == string("qXML_line"))
+   {
+      bool prev_pp = XmlField::pretty_print;
+      XmlField::pretty_print = false;
+      oss << "'" << *this << "'";
+      XmlField::pretty_print = prev_pp;
+   }
    else
    {
       if( fmt == string("Python"))
