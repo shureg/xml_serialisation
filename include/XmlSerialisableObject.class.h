@@ -19,6 +19,8 @@
 
 #include "xml_serialisation/XmlField.class.h"
 #include <iostream>
+#include <string>
+#include <sstream>
 
 namespace XML_SERIALISATION
 {
@@ -29,6 +31,13 @@ namespace XML_SERIALISATION
       virtual XmlField xml_description() const = 0;
 
       virtual ~XmlSerialisableObject(){}
+
+      const std::string to_string() const
+      {
+	 std::ostringstream oss;
+	 oss << this->xml_description();
+	 return oss.str();
+      }
    };
 }
 
